@@ -52,3 +52,4 @@ http://localhost:8080
 - Update station data in `script.js` for new monitoring locations.
 - Modify visual styles in `style.css`.
 - Change the login or dashboard text in `index.html`.
+
