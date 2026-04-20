@@ -47,6 +47,10 @@ http://localhost:8080
 - The login page uses a static `Remember me` behavior via `localStorage`.
 - The dashboard includes a chart rendered by `Chart.js` loaded from CDN.
 
+## Bahgo Website 
+
+https://levietano.github.io/BAHGO-Web-App/
+
 ## Customization
 
 - Update station data in `script.js` for new monitoring locations.
