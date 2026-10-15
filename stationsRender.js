@@ -1,0 +1,82 @@
+import { state } from '../state';
+import { getPalarBarangay } from './palarMap';
+
+export function updateCounts() {
+    const critical = state.stations.filter(s => s.status === 'critical').length;
+    const warning = state.stations.filter(s => s.status === 'warning').length;
+    const normal = state.stations.filter(s => s.status === 'safe').length;
+    const offline = state.stations.filter(s => s.status === 'offline').length;
+
+    const active = state.stations.length - offline;
+
+    const criticalCount = document.getElementById('criticalCount');
+    const warningCount = document.getElementById('warningCount');
+    const normalCount = document.getElementById('normalCount');
+    const activeCount = document.getElementById('activeCount');
+    const offlineCount = document.getElementById('offlineCount');
+    const superCriticalCount = document.getElementById('superCriticalCount');
+    const superWarningCount = document.getElementById('superWarningCount');
+    const superNormalCount = document.getElementById('superNormalCount');
+    const superActiveCount = document.getElementById('superActiveCount');
+    const superOfflineCount = document.getElementById('superOfflineCount');
+
+    if (criticalCount) criticalCount.textContent = critical;
+    if (warningCount) warningCount.textContent = warning;
+    if (normalCount) normalCount.textContent = normal;
+    if (activeCount) activeCount.textContent = active;
+    if (offlineCount) offlineCount.textContent = offline;
+    if (superCriticalCount) superCriticalCount.textContent = critical;
+    if (superWarningCount) superWarningCount.textContent = warning;
+    if (superNormalCount) superNormalCount.textContent = normal;
+    if (superActiveCount) superActiveCount.textContent = active;
+    if (superOfflineCount) superOfflineCount.textContent = offline;
+}
+
+export function renderStations() {
+    const grid = document.getElementById('stationGrid');
+    const superGrid = document.getElementById('superStationGrid');
+    if (!grid && !superGrid) return;
+    grid.innerHTML = state.stations.map(s => `
+        <div class="station-card" onclick="openStationModal('${s.id}')" style="position:relative">
+            <div class="card-header-icons" style="display:flex;gap:8px;align-items:center;position:absolute;top:12px;right:12px">
+                <button class="map-icon-btn" onclick="event.stopPropagation(); window.openPalarMapPopup('${s.id}')" title="View Palar Map" aria-label="View Palar Map">
+                    <img src="/Image/marker.png" alt="Palar map marker" style="width:18px;height:18px;display:block;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.2));" />
+                </button>
+                <span class="dot ${s.status === 'safe' ? 'green' : s.status === 'warning' ? 'yellow' : s.status === 'critical' ? 'red' : 'offline'}"></span>
+            </div>
+            <div class="s-header">
+                <div>
+                    <h3>${s.name}</h3>
+                    <p class="location-text" style="font-size: 0.75rem; color: #6B7280;">${getPalarBarangay(s.name, 0)}, Taguig</p>
+                    <p style="font-size: 0.75rem; color: #888;">${new Date(s.timestamp).toLocaleString()}</p>
+                </div>
+            </div>
+            <div class="s-stats">
+                <div class="s-row"><span>Water Level:</span><span class="val">${s.level} cm</span></div>
+                <div class="s-row"><span>Precipitation:</span><span class="val">${s.precip} mm/hr</span></div>
+                <div class="s-row"><span>Rise Rate:</span><span class="val">${s.rate} cm/hr</span></div>
+            </div>
+            <div class="s-label ${s.status}">${s.status.toUpperCase()}</div>
+        </div>
+    `).join('');
+    if (superGrid) superGrid.innerHTML = grid.innerHTML;
+}
+
+export function renderTable(filter = '') {
+    const tbody = document.getElementById('stationTableBody');
+    const superTbody = document.getElementById('superStationTableBody');
+    if (!tbody && !superTbody) return;
+    const filtered = state.stations.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
+    const rows = filtered.map(s => `
+        <tr onclick="openStationModal('${s.id}')">
+            <td>${s.name}</td>
+            <td>${s.level} cm</td>
+            <td>${s.precip} mm/hr</td>
+            <td>${s.rate} cm/hr</td>
+            <td>${new Date(s.timestamp).toLocaleString()}</td>
+            <td><span class="status-badge ${s.status}">${s.status.toUpperCase()}</span></td>
+        </tr>
+    `).join('');
+    if (tbody) tbody.innerHTML = rows;
+    if (superTbody) superTbody.innerHTML = rows;
+}
